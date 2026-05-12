@@ -16,7 +16,7 @@ pipeline {
             }
             post {
                 failure {
-                    mail to: 'admin@exemple.com',
+                    mail to: 'halima.ftati@esi.ac.ma',
                          subject: "ÉCHEC Build – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                          body: "La compilation a échoué.\nURL : ${env.BUILD_URL}"
                 }
@@ -37,7 +37,7 @@ pipeline {
                             junit 'target/surefire-reports/**/*.xml'
                         }
                         failure {
-                            mail to: 'admin@exemple.com',
+                            mail to: 'halima.ftati@esi.ac.ma',
                                  subject: "ÉCHEC Tests Unitaires – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                                  body: "URL : ${env.BUILD_URL}"
                         }
@@ -56,7 +56,7 @@ pipeline {
                                       failNoReports: false
                         }
                         failure {
-                            mail to: 'admin@exemple.com',
+                            mail to: 'halima.ftati@esi.ac.ma',
                                  subject: "ÉCHEC Couverture – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                                  body: "URL : ${env.BUILD_URL}"
                         }
@@ -80,7 +80,7 @@ pipeline {
                             ])
                         }
                         failure {
-                            mail to: 'admin@exemple.com',
+                            mail to: 'halima.ftati@esi.ac.ma',
                                  subject: "ÉCHEC Documentation – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                                  body: "URL : ${env.BUILD_URL}"
                         }
@@ -102,7 +102,7 @@ pipeline {
                                      fingerprint: true
                 }
                 failure {
-                    mail to: 'admin@exemple.com',
+                    mail to: 'halima.ftati@esi.ac.ma',
                          subject: "ÉCHEC Packaging – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                          body: "URL : ${env.BUILD_URL}"
                 }
@@ -117,7 +117,7 @@ pipeline {
             }
             post {
                 failure {
-                    mail to: 'admin@exemple.com',
+                    mail to: 'halima.ftati@esi.ac.ma',
                          subject: "ÉCHEC Déploiement – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                          body: "URL : ${env.BUILD_URL}"
                 }
@@ -129,7 +129,7 @@ pipeline {
     // ── NOTIFICATIONS GLOBALES ─────────────────────────────────────
     post {
         success {
-            mail to: 'admin@exemple.com',
+            mail to: 'halima.ftati@esi.ac.ma',
                  subject: "SUCCÈS Pipeline – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                  body: "Tout s'est bien passé !\nURL : ${env.BUILD_URL}"
         }
