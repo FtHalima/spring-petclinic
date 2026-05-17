@@ -14,7 +14,7 @@ pipeline {
             }
             post {
                 failure {
-                    mail to: 'ftatipy.2022@gmail.com',
+                    mail to: 'halimaftati.2005@gmail.com',
                          subject: "ECHEC Compilation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                          body: "La compilation a echoue. Voir : ${env.BUILD_URL}"
                 }
@@ -33,7 +33,7 @@ pipeline {
                             junit 'target/surefire-reports/**/*.xml'
                         }
                         failure {
-                            mail to: 'ftatipy.2022@gmail.com',
+                            mail to: 'halimaftati.2005@gmail.com',
                                  subject: "ECHEC Tests - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                                  body: "Les tests ont echoue. Voir : ${env.BUILD_URL}"
                         }
@@ -53,7 +53,7 @@ pipeline {
                             )
                         }
                         failure {
-                            mail to: 'ftatipy.2022@gmail.com',
+                            mail to: 'halimaftati.2005@gmail.com',
                                  subject: "ECHEC Couverture - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                                  body: "La couverture a echoue. Voir : ${env.BUILD_URL}"
                         }
@@ -66,7 +66,7 @@ pipeline {
                     }
                     post {
                         failure {
-                            mail to: 'ftatipy.2022@gmail.com',
+                            mail to: 'halimaftati.2005@gmail.com',
                                  subject: "ECHEC Documentation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                                  body: "La documentation a echoue. Voir : ${env.BUILD_URL}"
                         }
@@ -85,7 +85,7 @@ pipeline {
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
                 failure {
-                    mail to: 'ftatipy.2022@gmail.com',
+                    mail to: 'halimaftati.2005@gmail.com',
                          subject: "ECHEC Packaging - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                          body: "Le packaging a echoue. Voir : ${env.BUILD_URL}"
                 }
@@ -98,12 +98,12 @@ pipeline {
             }
             post {
                 success {
-                    mail to: 'ftatipy.2022@gmail.com',
+                    mail to: 'halimaftati.2005@gmail.com',
                          subject: "SUCCES Pipeline - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                          body: "Pipeline termine avec succes. Voir : ${env.BUILD_URL}"
                 }
                 failure {
-                    mail to: 'ton.email@gmail.com',
+                    mail to: 'halimaftati.2005@gmail.com',
                          subject: "ECHEC Deploiement - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                          body: "Le deploiement Nexus a echoue. Voir : ${env.BUILD_URL}"
                 }
