@@ -2,140 +2,130 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.5.2'
-        jdk 'jdk1.8.0_151'
+        maven 'Maven 3.9.14'
+        jdk 'JDK17'
     }
 
     stages {
 
-        // ── ÉTAPE 1 : COMPILATION ──────────────────────────────────
-        stage('Build') {
+        stage('Compilation') {
             steps {
-                echo '>>> Compilation du projet'
-                bat 'mvn compile'
+                bat 'mvnw compile'
             }
             post {
                 failure {
-                    mail to: 'halima.ftati@esi.ac.ma',
-                         subject: "ÉCHEC Build – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                         body: "La compilation a échoué.\nURL : ${env.BUILD_URL}"
+                    mail to: 'admin@gameverseacademy.ma',
+                         subject: "ECHEC Compilation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "La compilation a echoue. Voir : ${env.BUILD_URL}"
                 }
             }
         }
 
-        // ── ÉTAPE 2 : TESTS EN PARALLÈLE ──────────────────────────
         stage('Tests') {
             parallel {
 
                 stage('Tests Unitaires') {
                     steps {
-                        echo '>>> Tests unitaires'
-                        bat 'mvn test'
+                        bat 'mvnw test -DskipTests=false'
                     }
                     post {
                         always {
                             junit 'target/surefire-reports/**/*.xml'
                         }
                         failure {
-                            mail to: 'halima.ftati@esi.ac.ma',
-                                 subject: "ÉCHEC Tests Unitaires – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                                 body: "URL : ${env.BUILD_URL}"
+                            mail to: 'admin@gameverseacademy.ma',
+                                 subject: "ECHEC Tests Unitaires - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                                 body: "Les tests unitaires ont echoue. Voir : ${env.BUILD_URL}"
                         }
                     }
                 }
 
                 stage('Couverture de Code') {
                     steps {
-                        echo '>>> Couverture (Cobertura)'
-                        bat 'mvn cobertura:cobertura'
+                        bat 'mvnw jacoco:report'
                     }
                     post {
                         always {
-                            cobertura coberturaReportFile: 'target/site/cobertura/coverage.xml',
-                                      onlyStable: false,
-                                      failNoReports: false
+                            jacoco(
+                                execPattern: 'target/jacoco.exec',
+                                classPattern: 'target/classes',
+                                sourcePattern: 'src/main/java'
+                            )
                         }
                         failure {
-                            mail to: 'halima.ftati@esi.ac.ma',
-                                 subject: "ÉCHEC Couverture – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                                 body: "URL : ${env.BUILD_URL}"
+                            mail to: 'admin@gameverseacademy.ma',
+                                 subject: "ECHEC Couverture - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                                 body: "La couverture de code a echoue. Voir : ${env.BUILD_URL}"
                         }
                     }
                 }
 
                 stage('Documentation') {
                     steps {
-                        echo '>>> Génération du site Maven'
-                        bat 'mvn site'
+                        bat 'mvnw site -DskipTests'
                     }
                     post {
-                        always {
-                            publishHTML(target: [
-                                allowMissing         : false,
-                                alwaysLinkToLastBuild: true,
-                                keepAll              : true,
-                                reportDir            : 'target/site',
-                                reportFiles          : 'index.html',
-                                reportName           : 'Maven Site'
-                            ])
-                        }
                         failure {
-                            mail to: 'halima.ftati@esi.ac.ma',
-                                 subject: "ÉCHEC Documentation – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                                 body: "URL : ${env.BUILD_URL}"
+                            mail to: 'admin@gameverseacademy.ma',
+                                 subject: "ECHEC Documentation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                                 body: "La generation de documentation a echoue. Voir : ${env.BUILD_URL}"
                         }
                     }
                 }
 
-            } // fin parallel
+            }
         }
 
-        // ── ÉTAPE 3 : PACKAGING ────────────────────────────────────
         stage('Packaging') {
             steps {
-                echo '>>> Empaquetage JAR/WAR'
-                bat 'mvn package -DskipTests'
+                bat 'mvnw package -DskipTests'
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'target/*.jar,target/*.war',
-                                     fingerprint: true
+                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
                 failure {
-                    mail to: 'halima.ftati@esi.ac.ma',
-                         subject: "ÉCHEC Packaging – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                         body: "URL : ${env.BUILD_URL}"
+                    mail to: 'admin@gameverseacademy.ma',
+                         subject: "ECHEC Packaging - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "Le packaging a echoue. Voir : ${env.BUILD_URL}"
                 }
             }
         }
 
-        // ── ÉTAPE 4 : DÉPLOIEMENT NEXUS ───────────────────────────
-        stage('Déploiement Nexus') {
+        stage('Deploiement Nexus') {
             steps {
-                echo '>>> Déploiement sur Nexus'
-                bat 'mvn deploy -DskipTests'
+                bat 'mvnw deploy -DskipTests'
             }
             post {
+                success {
+                    mail to: 'admin@gameverseacademy.ma',
+                         subject: "SUCCES Deploiement - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "Le projet a ete deploye avec succes sur Nexus. Voir : ${env.BUILD_URL}"
+                }
                 failure {
-                    mail to: 'halima.ftati@esi.ac.ma',
-                         subject: "ÉCHEC Déploiement – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                         body: "URL : ${env.BUILD_URL}"
+                    mail to: 'admin@gameverseacademy.ma',
+                         subject: "ECHEC Deploiement Nexus - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "Le deploiement sur Nexus a echoue. Voir : ${env.BUILD_URL}"
                 }
             }
         }
 
-    } // fin stages
-
-    // ── NOTIFICATIONS GLOBALES ─────────────────────────────────────
-    post {
-        success {
-            mail to: 'halima.ftati@esi.ac.ma',
-                 subject: "SUCCÈS Pipeline – ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Tout s'est bien passé !\nURL : ${env.BUILD_URL}"
-        }
-        failure {
-            echo 'Une étape a échoué — vérifier les logs Jenkins.'
-        }
     }
 
-} // fin pipeline
+    post {
+        always {
+            cleanWs()
+        }
+        failure {
+            mail to: 'admin@gameverseacademy.ma',
+                 subject: "ECHEC PIPELINE - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                 body: """
+                 Le pipeline GameVerseAcademy a echoue.
+                 Build numero : ${env.BUILD_NUMBER}
+                 URL du build : ${env.BUILD_URL}
+                 Branche      : ${env.GIT_BRANCH}
+                 Commit       : ${env.GIT_COMMIT}
+                 """
+        }
+    }
+}
