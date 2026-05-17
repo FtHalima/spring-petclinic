@@ -14,7 +14,7 @@ pipeline {
             }
             post {
                 failure {
-                    mail to: 'admin@gameverseacademy.ma',
+                    mail to: 'ftatipy.2022@gmail.com',
                          subject: "ECHEC Compilation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                          body: "La compilation a echoue. Voir : ${env.BUILD_URL}"
                 }
@@ -26,23 +26,23 @@ pipeline {
 
                 stage('Tests Unitaires') {
                     steps {
-                        bat 'mvnw test -DskipTests=false'
+                        bat 'mvnw test'
                     }
                     post {
                         always {
                             junit 'target/surefire-reports/**/*.xml'
                         }
                         failure {
-                            mail to: 'admin@gameverseacademy.ma',
-                                 subject: "ECHEC Tests Unitaires - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                                 body: "Les tests unitaires ont echoue. Voir : ${env.BUILD_URL}"
+                            mail to: 'ftatipy.2022@gmail.com',
+                                 subject: "ECHEC Tests - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                                 body: "Les tests ont echoue. Voir : ${env.BUILD_URL}"
                         }
                     }
                 }
 
                 stage('Couverture de Code') {
                     steps {
-                        bat 'mvnw jacoco:report'
+                        bat 'mvnw test jacoco:report -DskipTests=false'
                     }
                     post {
                         always {
@@ -53,9 +53,9 @@ pipeline {
                             )
                         }
                         failure {
-                            mail to: 'admin@gameverseacademy.ma',
+                            mail to: 'ftatipy.2022@gmail.com',
                                  subject: "ECHEC Couverture - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                                 body: "La couverture de code a echoue. Voir : ${env.BUILD_URL}"
+                                 body: "La couverture a echoue. Voir : ${env.BUILD_URL}"
                         }
                     }
                 }
@@ -66,9 +66,9 @@ pipeline {
                     }
                     post {
                         failure {
-                            mail to: 'admin@gameverseacademy.ma',
+                            mail to: 'ftatipy.2022@gmail.com',
                                  subject: "ECHEC Documentation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                                 body: "La generation de documentation a echoue. Voir : ${env.BUILD_URL}"
+                                 body: "La documentation a echoue. Voir : ${env.BUILD_URL}"
                         }
                     }
                 }
@@ -85,7 +85,7 @@ pipeline {
                     archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
                 }
                 failure {
-                    mail to: 'admin@gameverseacademy.ma',
+                    mail to: 'ftatipy.2022@gmail.com',
                          subject: "ECHEC Packaging - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
                          body: "Le packaging a echoue. Voir : ${env.BUILD_URL}"
                 }
@@ -98,14 +98,14 @@ pipeline {
             }
             post {
                 success {
-                    mail to: 'admin@gameverseacademy.ma',
-                         subject: "SUCCES Deploiement - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                         body: "Le projet a ete deploye avec succes sur Nexus. Voir : ${env.BUILD_URL}"
+                    mail to: 'ftatipy.2022@gmail.com',
+                         subject: "SUCCES Pipeline - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "Pipeline termine avec succes. Voir : ${env.BUILD_URL}"
                 }
                 failure {
-                    mail to: 'admin@gameverseacademy.ma',
-                         subject: "ECHEC Deploiement Nexus - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                         body: "Le deploiement sur Nexus a echoue. Voir : ${env.BUILD_URL}"
+                    mail to: 'ton.email@gmail.com',
+                         subject: "ECHEC Deploiement - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "Le deploiement Nexus a echoue. Voir : ${env.BUILD_URL}"
                 }
             }
         }
@@ -115,17 +115,6 @@ pipeline {
     post {
         always {
             cleanWs()
-        }
-        failure {
-            mail to: 'admin@gameverseacademy.ma',
-                 subject: "ECHEC PIPELINE - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                 body: """
-                 Le pipeline GameVerseAcademy a echoue.
-                 Build numero : ${env.BUILD_NUMBER}
-                 URL du build : ${env.BUILD_URL}
-                 Branche      : ${env.GIT_BRANCH}
-                 Commit       : ${env.GIT_COMMIT}
-                 """
         }
     }
 }
