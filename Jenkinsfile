@@ -42,15 +42,18 @@ pipeline {
 
                 stage('Couverture de Code') {
                     steps {
-                        bat 'mvnw test jacoco:report -DskipTests=false'
+                        bat 'mvnw test jacoco:report'
                     }
                     post {
                         always {
-                            jacoco(
-                                execPattern: 'target/jacoco.exec',
-                                classPattern: 'target/classes',
-                                sourcePattern: 'src/main/java'
-                            )
+                            publishHTML(target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: 'target/site/jacoco',
+                                reportFiles: 'index.html',
+                                reportName: 'JaCoCo Coverage Report'
+                            ])
                         }
                         failure {
                             mail to: 'halimaftati.2005@gmail.com',
