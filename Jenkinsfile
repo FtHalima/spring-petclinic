@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -46,14 +47,9 @@ pipeline {
                     }
                     post {
                         always {
-                            publishHTML(target: [
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: true,
-                                keepAll: true,
-                                reportDir: 'target/site/jacoco',
-                                reportFiles: 'index.html',
-                                reportName: 'JaCoCo Coverage Report'
-                            ])
+                            archiveArtifacts artifacts: 'target/site/jacoco/**/*',
+                                             allowEmptyArchive: true,
+                                             fingerprint: false
                         }
                         failure {
                             mail to: 'halimaftati.2005@gmail.com',
@@ -68,6 +64,11 @@ pipeline {
                         bat 'mvnw site -DskipTests'
                     }
                     post {
+                        always {
+                            archiveArtifacts artifacts: 'target/site/**/*',
+                                             allowEmptyArchive: true,
+                                             fingerprint: false
+                        }
                         failure {
                             mail to: 'halimaftati.2005@gmail.com',
                                  subject: "ECHEC Documentation - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
@@ -85,7 +86,8 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'target/*.jar',
+                                     fingerprint: true
                 }
                 failure {
                     mail to: 'halimaftati.2005@gmail.com',
