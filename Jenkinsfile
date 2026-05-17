@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -41,24 +40,6 @@ pipeline {
                     }
                 }
 
-                stage('Couverture de Code') {
-                    steps {
-                        bat 'mvnw test jacoco:report'
-                    }
-                    post {
-                        always {
-                            archiveArtifacts artifacts: 'target/site/jacoco/**/*',
-                                             allowEmptyArchive: true,
-                                             fingerprint: false
-                        }
-                        failure {
-                            mail to: 'halimaftati.2005@gmail.com',
-                                 subject: "ECHEC Couverture - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
-                                 body: "La couverture a echoue. Voir : ${env.BUILD_URL}"
-                        }
-                    }
-                }
-
                 stage('Documentation') {
                     steps {
                         bat 'mvnw site -DskipTests'
@@ -77,6 +58,24 @@ pipeline {
                     }
                 }
 
+            }
+        }
+
+        stage('Couverture de Code') {
+            steps {
+                bat 'mvnw jacoco:report'
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'target/site/jacoco/**/*',
+                                     allowEmptyArchive: true,
+                                     fingerprint: false
+                }
+                failure {
+                    mail to: 'halimaftati.2005@gmail.com',
+                         subject: "ECHEC Couverture - GameVerseAcademy - Build #${env.BUILD_NUMBER}",
+                         body: "La couverture a echoue. Voir : ${env.BUILD_URL}"
+                }
             }
         }
 
